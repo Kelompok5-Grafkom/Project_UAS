@@ -1,0 +1,232 @@
+{
+	"asset":
+	{
+		"version": "2.0",
+		"generator": "Unreal Engine 5.3.2"
+	},
+	"scene": 0,
+	"accessors": [
+		{
+			"bufferView": 0,
+			"count": 5,
+			"type": "MAT4",
+			"componentType": 5126
+		},
+		{
+			"bufferView": 1,
+			"count": 10644,
+			"type": "SCALAR",
+			"componentType": 5123
+		},
+		{
+			"bufferView": 2,
+			"count": 7284,
+			"type": "VEC3",
+			"componentType": 5126,
+			"min": [ -1.739766, -0.000387683016, -0.990215302 ],
+			"max": [ 1.62980485, 2.01421475, 0.990215302 ]
+		},
+		{
+			"bufferView": 3,
+			"count": 7284,
+			"type": "VEC3",
+			"componentType": 5126
+		},
+		{
+			"bufferView": 4,
+			"count": 7284,
+			"type": "VEC4",
+			"componentType": 5126
+		},
+		{
+			"bufferView": 5,
+			"count": 7284,
+			"type": "VEC2",
+			"componentType": 5126
+		},
+		{
+			"bufferView": 6,
+			"count": 7284,
+			"type": "VEC2",
+			"componentType": 5126
+		},
+		{
+			"bufferView": 7,
+			"count": 7284,
+			"type": "VEC4",
+			"componentType": 5121
+		},
+		{
+			"bufferView": 8,
+			"count": 7284,
+			"type": "VEC4",
+			"componentType": 5121,
+			"normalized": true
+		}
+	],
+	"buffers": [
+		{
+			"uri": "car3.bin",
+			"byteLength": 487784
+		}
+	],
+	"bufferViews": [
+		{
+			"buffer": 0,
+			"byteLength": 320
+		},
+		{
+			"buffer": 0,
+			"byteLength": 21288,
+			"byteOffset": 320,
+			"target": 34963
+		},
+		{
+			"buffer": 0,
+			"byteLength": 87408,
+			"byteOffset": 21608,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 87408,
+			"byteOffset": 109016,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 116544,
+			"byteOffset": 196424,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 58272,
+			"byteOffset": 312968,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 58272,
+			"byteOffset": 371240,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 29136,
+			"byteOffset": 429512,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 29136,
+			"byteOffset": 458648,
+			"target": 34962
+		}
+	],
+	"images": [
+		{
+			"uri": "MI_Atlas_01_MetallicRoughness.png"
+		},
+		{
+			"uri": "T_Atlas_01_BC.png"
+		}
+	],
+	"materials": [
+		{
+			"name": "MI_Atlas_01",
+			"pbrMetallicRoughness":
+			{
+				"baseColorTexture":
+				{
+					"index": 0
+				},
+				"metallicRoughnessTexture":
+				{
+					"index": 1
+				}
+			}
+		}
+	],
+	"meshes": [
+		{
+			"name": "SK_Car_03",
+			"primitives": [
+				{
+					"attributes":
+					{
+						"POSITION": 2,
+						"NORMAL": 3,
+						"TANGENT": 4,
+						"TEXCOORD_0": 5,
+						"TEXCOORD_1": 6,
+						"JOINTS_0": 7,
+						"WEIGHTS_0": 8
+					},
+					"indices": 1,
+					"material": 0
+				}
+			]
+		}
+	],
+	"nodes": [
+		{
+			"skin": 0,
+			"mesh": 0,
+			"children": [ 1 ]
+		},
+		{
+			"name": "Car_03_Root",
+			"translation": [ 0, 0.699999988, 0 ],
+			"rotation": [ 0.707106709, -0, -0, 0.707106829 ],
+			"children": [ 2, 3, 4, 5 ]
+		},
+		{
+			"name": "LT_Rear",
+			"translation": [ -0.7320503, -0.649999976, 0.366019726 ]
+		},
+		{
+			"name": "LT_Front",
+			"translation": [ 0.731746018, -0.649999976, 0.366019726 ]
+		},
+		{
+			"name": "RT_Rear",
+			"translation": [ -0.7320503, 0.649999976, 0.366019726 ]
+		},
+		{
+			"name": "RT_Front",
+			"translation": [ 0.731746018, 0.649999976, 0.366019726 ]
+		}
+	],
+	"samplers": [
+		{
+			"minFilter": 9987,
+			"magFilter": 9729
+		}
+	],
+	"scenes": [
+		{
+			"nodes": [ 0 ]
+		}
+	],
+	"skins": [
+		{
+			"name": "SK_Car_03",
+			"inverseBindMatrices": 0,
+			"skeleton": 0,
+			"joints": [ 1, 2, 3, 4, 5 ]
+		}
+	],
+	"textures": [
+		{
+			"name": "T_Atlas_01_BC",
+			"sampler": 0,
+			"source": 1
+		},
+		{
+			"name": "MI_Atlas_01_MetallicRoughness",
+			"sampler": 0,
+			"source": 0
+		}
+	]
+}
