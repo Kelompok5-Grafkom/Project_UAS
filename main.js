@@ -5,6 +5,7 @@ import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Sky } from 'three/addons/objects/Sky.js';
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -73,6 +74,25 @@ mapLoader.load("Map.gltf", function (gltf) {
   scene.add(model);
 });
 
+// Langit
+let sky = new Sky();
+let sun = new THREE.Vector3();
+sky.scale.setScalar(450000);
+scene.add(sky);
+
+const uniforms = sky.material.uniforms;
+
+uniforms['turbidity'].value = 10;
+uniforms['rayleigh'].value = 3;
+uniforms['mieCoefficient'].value = 0.005;
+uniforms['mieDirectionalG'].value = 0.7;
+
+const phi = THREE.MathUtils.degToRad(90 - 5);
+const theta = THREE.MathUtils.degToRad(180);
+
+sun.setFromSphericalCoords(1, phi, theta);
+
+uniforms['sunPosition'].value.copy(sun);
 
 const objLoader = new GLTFLoader().setPath('resources/object/object/');
 objLoader.load('car1.gltf', function (gltf) {
