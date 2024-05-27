@@ -64,14 +64,116 @@ const objects = [];
 // }
 
 // GLTF
-const loader = new GLTFLoader().setPath("resources/project/");
-loader.load("Map.gltf", function (gltf) {
+const mapLoader = new GLTFLoader().setPath("resources/project/");
+mapLoader.load("Map.gltf", function (gltf) {
   const model = gltf.scene;
 
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
 });
+
+
+const objLoader = new GLTFLoader().setPath('resources/object/object/');
+objLoader.load('car1.gltf', function (gltf) {
+  const model = gltf.scene;
+
+  model.position.y = 1.1;
+  model.position.x = 5;
+  model.position.z = 2;
+  renderer.compileAsync(model, camera, scene);
+
+  scene.add(model);
+});
+
+var anims = null;
+const clock = new THREE.Clock();
+
+
+let mixer;
+var _animations = {};
+const _OnLoad = (animName, anim, param) => {
+  const clip = anim.animations[param];
+  const action = mixer.clipAction(clip);
+
+  _animations[animName] = {
+    clip: clip,
+    action: action,
+  };
+};
+
+const fbxLoader = new FBXLoader();
+fbxLoader.load('resources/project/Farmer.fbx', (object) => {
+
+  mixer = new THREE.AnimationMixer(object);
+
+  // mencatat animation yang diperlukan. setelah dicatat, dipanggil menggunakan function di screenshot an, trs dijalankan menggunakan keyboard listener dan dijalankan di animate
+  _OnLoad('walk', object, 0);
+  _OnLoad('run', object, 1);
+
+  // const action = _animations['walk'].action;
+  // action.play();
+
+  object.traverse(function (child) {
+
+    if (child.isMesh) {
+
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+    }
+
+  });
+
+  console.log(_animations);
+  object.scale.x = object.scale.y = object.scale.z = 0.05;
+  object.position.y = 2;
+
+  scene.add(object);
+
+});
+
+console.log(_animations);
+
+var walk = false;
+var run = false;
+
+var keydown = function (e) {
+  var keyCode = e.keyCode;
+
+  if (keyCode == 87) {
+    walk = true;
+    // if (walk)
+    //   walk = false;
+    // else {
+    //   walk = true;
+    //   run = false;
+    // }
+  }
+
+  if (keyCode == 83) {
+    run = true;
+    // if (run)
+    //   run = false;
+    // else {
+    //   run = true;
+    //   walk = false;
+    // }
+
+  }
+
+  return false;
+}
+
+var keyup = function (e) {
+  walk = false;
+  run = false;
+
+  return false;
+}
+
+document.addEventListener('keydown', keydown);
+document.addEventListener('keyup', keyup);
 
 var time_prev = 0;
 function animate(time) {
@@ -81,8 +183,28 @@ function animate(time) {
   objects.forEach((obj) => {
     obj.rotation.z += dt * 0.01;
   });
+  const delta = clock.getDelta();
+
+  if (mixer) mixer.update(delta);
 
   renderer.render(scene, camera);
+
+
+  if (_animations['walk'] && _animations['run']) {
+    const walkAction = _animations['walk'].action;
+    const runAction = _animations['run'].action;
+    if (walk) {
+      walkAction.play()
+    } else {
+      walkAction.stop();
+    }
+
+    if (run) {
+      runAction.play();
+    } else {
+      runAction.stop();
+    }
+  }
 
   time_prev = time;
   requestAnimationFrame(animate);
