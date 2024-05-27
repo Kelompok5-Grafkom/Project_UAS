@@ -98,7 +98,7 @@ const objLoader = new GLTFLoader().setPath('resources/object/object/');
 objLoader.load('car1.gltf', function (gltf) {
   const model = gltf.scene;
 
-  model.position.y = 1.1;
+  model.position.y = 1.25;
   model.position.x = 5;
   model.position.z = 2;
   renderer.compileAsync(model, camera, scene);
@@ -146,8 +146,8 @@ fbxLoader.load('resources/project/Farmer.fbx', (object) => {
   });
 
   console.log(_animations);
-  object.scale.x = object.scale.y = object.scale.z = 0.05;
-  object.position.y = 2;
+  object.scale.x = object.scale.y = object.scale.z = 0.01;
+  object.position.y = 1.25;
 
   scene.add(object);
 
