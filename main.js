@@ -5,7 +5,7 @@ import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Sky } from 'three/addons/objects/Sky.js';
+import { Sky } from "three/addons/objects/Sky.js";
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,24 +32,24 @@ controls.update();
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 5);
-light.position.set(0, 10, 0);
-light.target.position.set(-5, 0, 0);
-scene.add(light);
-scene.add(light.target);
+// light.position.set(0, 10, 0);
+// light.target.position.set(-5, 0, 0);
+// scene.add(light);
+// scene.add(light.target);
 
 // Hemisphere Light
-light = new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 5); //skyColor, groundColor, intensity
-scene.add(light);
+// light = new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 5); //skyColor, groundColor, intensity
+// scene.add(light);
 
 // Point Light
-light = new THREE.PointLight(0xffff00, 500); //color, intensity
-light.position.set(10, 10, 0);
-scene.add(light);
+// light = new THREE.PointLight(0xffff00, 500); //color, intensity
+// light.position.set(10, 10, 0);
+// scene.add(light);
 
 // Spot Light
-light = new THREE.SpotLight(0xff0000, 500); //color, intensity
-light.position.set(10, 10, 0);
-scene.add(light);
+// light = new THREE.SpotLight(0xff0000, 500); //color, intensity
+// light.position.set(10, 10, 0);
+// scene.add(light);
 
 //Geometry
 const objects = [];
@@ -66,7 +66,7 @@ const objects = [];
 
 // GLTF
 const mapLoader = new GLTFLoader().setPath("resources/project/");
-mapLoader.load("Map.gltf", function (gltf) {
+mapLoader.load("Map2.gltf", function (gltf) {
   const model = gltf.scene;
 
   renderer.compileAsync(model, camera, scene);
@@ -80,22 +80,57 @@ let sun = new THREE.Vector3();
 sky.scale.setScalar(450000);
 scene.add(sky);
 
+var point_light = [
+  [1.279, 5.583, 4.007],
+  [-3.051, 5.788, -4.046],
+  [2.548, 5.63, -20.145],
+  [28.205, 5.908, 20.436],
+  [46.883, 5.624, 18.004],
+  [28.192, 5.908, 20.972],
+  [50.285, 5.374, 18.119],
+  [46.877, 5.553, 9.513],
+  [49.543, 5.638, 9.838],
+  [32.874, 5.592, 27.539],
+  [32.873, 5.583, 32.479],
+  [39.403, 5.583, 32.509],
+  [39.449, 5.584, 27.510],
+  [46.674, 5.366, 32.435],
+  [50.467, 5.642, 32.494],
+  [46.280, 5.623, 27.494],
+  [50.409, 5.657, 27.509],
+  [57.924, 5.563, 27.483],
+  [57.770, 5.623, 32.484],
+  [64.085, 5.399, 27.417],
+  [64.013, 5.690, 32.448],
+  [46.855, 5.553, 42.445],
+  [50.064, 5.353, 42.456],
+  [46.834, 5.607, 50.509],
+  [49.994, 5.566, 50.463]
+];
+
+// Lampu Jalan
+for (var i = 0; i < point_light.length; i++) {
+  light = new THREE.PointLight(0xedcd6b, 30);
+  light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
+  scene.add(light);
+}
+
 const uniforms = sky.material.uniforms;
 
-uniforms['turbidity'].value = 10;
-uniforms['rayleigh'].value = 3;
-uniforms['mieCoefficient'].value = 0.005;
-uniforms['mieDirectionalG'].value = 0.7;
+uniforms["turbidity"].value = 10;
+uniforms["rayleigh"].value = 3;
+uniforms["mieCoefficient"].value = 0.005;
+uniforms["mieDirectionalG"].value = 0.7;
 
 const phi = THREE.MathUtils.degToRad(90 - 5);
 const theta = THREE.MathUtils.degToRad(180);
 
 sun.setFromSphericalCoords(1, phi, theta);
 
-uniforms['sunPosition'].value.copy(sun);
+uniforms["sunPosition"].value.copy(sun);
 
-const objLoader = new GLTFLoader().setPath('resources/object/object/');
-objLoader.load('car1.gltf', function (gltf) {
+const objLoader = new GLTFLoader().setPath("resources/object/object/");
+objLoader.load("car1.gltf", function (gltf) {
   const model = gltf.scene;
 
   model.position.y = 1.25;
@@ -108,7 +143,6 @@ objLoader.load('car1.gltf', function (gltf) {
 
 var anims = null;
 const clock = new THREE.Clock();
-
 
 let mixer;
 var _animations = {};
@@ -123,26 +157,21 @@ const _OnLoad = (animName, anim, param) => {
 };
 
 const fbxLoader = new FBXLoader();
-fbxLoader.load('resources/project/Farmer.fbx', (object) => {
-
+fbxLoader.load("resources/project/Farmer.fbx", (object) => {
   mixer = new THREE.AnimationMixer(object);
 
   // mencatat animation yang diperlukan. setelah dicatat, dipanggil menggunakan function di screenshot an, trs dijalankan menggunakan keyboard listener dan dijalankan di animate
-  _OnLoad('walk', object, 0);
-  _OnLoad('run', object, 1);
+  _OnLoad("walk", object, 0);
+  _OnLoad("run", object, 1);
 
   // const action = _animations['walk'].action;
   // action.play();
 
   object.traverse(function (child) {
-
     if (child.isMesh) {
-
       child.castShadow = true;
       child.receiveShadow = true;
-
     }
-
   });
 
   console.log(_animations);
@@ -150,7 +179,6 @@ fbxLoader.load('resources/project/Farmer.fbx', (object) => {
   object.position.y = 1.25;
 
   scene.add(object);
-
 });
 
 console.log(_animations);
@@ -179,21 +207,20 @@ var keydown = function (e) {
     //   run = true;
     //   walk = false;
     // }
-
   }
 
   return false;
-}
+};
 
 var keyup = function (e) {
   walk = false;
   run = false;
 
   return false;
-}
+};
 
-document.addEventListener('keydown', keydown);
-document.addEventListener('keyup', keyup);
+document.addEventListener("keydown", keydown);
+document.addEventListener("keyup", keyup);
 
 var time_prev = 0;
 function animate(time) {
@@ -209,12 +236,11 @@ function animate(time) {
 
   renderer.render(scene, camera);
 
-
-  if (_animations['walk'] && _animations['run']) {
-    const walkAction = _animations['walk'].action;
-    const runAction = _animations['run'].action;
+  if (_animations["walk"] && _animations["run"]) {
+    const walkAction = _animations["walk"].action;
+    const runAction = _animations["run"].action;
     if (walk) {
-      walkAction.play()
+      walkAction.play();
     } else {
       walkAction.stop();
     }
