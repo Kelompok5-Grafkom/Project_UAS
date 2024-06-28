@@ -153,8 +153,21 @@ var player = new Player(
   10
 );
 
+let isOrbitalMode = true;
+
+setTimeout(() => {
+  isOrbitalMode = false;
+}, 10000);
+
 function render(dt) {
   player.update(dt);
+
+  if (isOrbitalMode && player.mesh) {
+    const radius = 5; // Distance dari player
+    const speed = 0.018; // Speedorbit
+    player.camera.orbit(player.mesh.position, radius, speed);
+  } 
+
   renderer.render(scene, camera);
 }
 
