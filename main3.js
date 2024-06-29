@@ -7,10 +7,13 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { Sky } from "three/addons/objects/Sky.js";
 import { Player, PlayerController, ThirdPersonCamera } from "./player.js";
+import { mod } from "three/examples/jsm/nodes/Nodes.js";
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xaec9f5);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
@@ -32,14 +35,24 @@ camera.lookAt(0, 0, 0);
 // Directional Light
 
 var color = 0xffffff;
-var light = new THREE.DirectionalLight(color, 5);
-var directionalLight = new THREE.DirectionalLight(color, 5);
-directionalLight.castShadow = true;
+var light = new THREE.DirectionalLight(color, 1.0);
+var dirLight = new THREE.DirectionalLight(color, 3);
+dirLight.position.set(0, 50, 0);
+dirLight.castShadow = true;
+dirLight.shadow.camera.near = 1;
+dirLight.shadow.camera.far = 50;
+dirLight.shadow.camera.right = 15;
+dirLight.shadow.camera.left = - 15;
+dirLight.shadow.camera.top = 15;
+dirLight.shadow.camera.bottom = - 15;
+dirLight.shadow.mapSize.width = 1024;
+dirLight.shadow.mapSize.height = 1024;
 // scene.add(directionalLight);
 // directionalLight.position.set(0, 10, 0);
 // directionalLight.target.position.set(-5, 0, 0);
 // scene.add(directionalLight.target);
-// scene.add(light);
+scene.add(dirLight);
+// scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 // scene.add(light.target);
 
 // Hemisphere Light
@@ -74,6 +87,12 @@ const mapLoader = new GLTFLoader().setPath("resources/project/");
 mapLoader.load("Map.gltf", function (gltf) {
   const model = gltf.scene;
 
+  model.traverse(c => {
+    if (c.isMesh) {
+      c.receiveShadow = true;
+      c.castShadow = true;
+    }
+  });
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
@@ -170,7 +189,7 @@ function render(dt) {
     const radius = 5; // Distance dari player
     const speed = 0.018; // Speedorbit
     player.camera.orbit(player.mesh.position, radius, speed);
-  } 
+  }
 
   renderer.render(scene, camera);
 }
