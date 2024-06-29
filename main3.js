@@ -24,17 +24,21 @@ camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
 // Orbit Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 5, 0);
-controls.update();
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.target.set(0, 5, 0);
+// controls.update();
 
 // LIGHT
 // Directional Light
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 5);
-// light.position.set(0, 10, 0);
-// light.target.position.set(-5, 0, 0);
+var directionalLight = new THREE.DirectionalLight(color, 5);
+directionalLight.castShadow = true;
+// scene.add(directionalLight);
+// directionalLight.position.set(0, 10, 0);
+// directionalLight.target.position.set(-5, 0, 0);
+// scene.add(directionalLight.target);
 // scene.add(light);
 // scene.add(light.target);
 
@@ -67,7 +71,7 @@ const objects = [];
 
 // GLTF
 const mapLoader = new GLTFLoader().setPath("resources/project/");
-mapLoader.load("Map2.gltf", function (gltf) {
+mapLoader.load("Map.gltf", function (gltf) {
   const model = gltf.scene;
 
   renderer.compileAsync(model, camera, scene);

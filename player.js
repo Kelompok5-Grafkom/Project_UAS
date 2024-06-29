@@ -31,8 +31,8 @@ export class Player{
     loadModel(){
         var loader = new FBXLoader();
         loader.setPath('./resources/project/');
-        loader.load('Farmer idle.fbx', (fbx) => {
-            fbx.scale.setScalar(0.01);
+        loader.load('Male_Casual.fbx', (fbx) => {
+            fbx.scale.setScalar(0.003);
             fbx.position.y = 1.25;
             fbx.traverse(c => {
               c.castShadow = true;
@@ -42,6 +42,7 @@ export class Player{
             this.mesh.rotation.y += Math.PI/2;
 
             this.mixer = new THREE.AnimationMixer(this.mesh);
+            console.log(fbx);
 
             var onLoad = (animName, anim, index) => {
                 const clip = anim.animations[index];
@@ -55,8 +56,8 @@ export class Player{
 
             const loader = new FBXLoader();
             loader.setPath('./resources/project/');
-            loader.load('Farmer idle.fbx', (fbx) => { onLoad('idle', fbx, 16) });
-            loader.load('Farmer run.fbx', (fbx) => { onLoad('run', fbx, 0) });
+            loader.load('Male_Casual.fbx', (fbx) => { onLoad('idle', fbx, 3) });
+            loader.load('Male_Casual.fbx', (fbx) => { onLoad('run', fbx, 1) });
 
             
         });
@@ -85,7 +86,7 @@ export class Player{
             this.mesh.rotation.y = 0;
         }
         this.lastRotation = this.mesh.rotation.y;
-        console.log(direction.length())
+        // console.log(direction.length())
         if(direction.length() == 0){
             if(this.animations['idle']){
                 if(this.state != "idle"){

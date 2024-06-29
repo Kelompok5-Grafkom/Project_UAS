@@ -32,7 +32,7 @@ controls.update();
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 5);
-// light.position.set(0, 10, 0);
+light.position.set(0, 2, 0);
 // light.target.position.set(-5, 0, 0);
 // scene.add(light);
 // scene.add(light.target);
