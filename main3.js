@@ -47,11 +47,16 @@ dirLight.shadow.camera.top = 15;
 dirLight.shadow.camera.bottom = -15;
 dirLight.shadow.mapSize.width = 1024;
 dirLight.shadow.mapSize.height = 1024;
-// scene.add(directionalLight);
-// directionalLight.position.set(0, 10, 0);
-// directionalLight.target.position.set(-5, 0, 0);
-// scene.add(directionalLight.target);
+
 scene.add(dirLight);
+// scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+
+// Ambient Light
+// var ambLight = new THREE.AmbientLight(0x000038);
+// ambLight.intensity = 10;
+// scene.add(ambLight);
+
+
 
 // plane
 {
@@ -155,6 +160,7 @@ for (var i = 0; i < point_light.length; i++) {
   scene.add(light);
 }
 
+// Langit dan matahari
 const uniforms = sky.material.uniforms;
 
 uniforms["turbidity"].value = 10;
@@ -164,9 +170,7 @@ uniforms["mieDirectionalG"].value = 0.7;
 
 const phi = THREE.MathUtils.degToRad(90 - 5);
 const theta = THREE.MathUtils.degToRad(180);
-
 sun.setFromSphericalCoords(1, phi, theta);
-
 uniforms["sunPosition"].value.copy(sun);
 
 const objLoader = new GLTFLoader().setPath("resources/object/object/");
@@ -176,6 +180,12 @@ objLoader.load("car1.gltf", function (gltf) {
   model.position.y = 1.25;
   model.position.x = 5;
   model.position.z = 2;
+  model.traverse((c) => {
+    if (c.isMesh) {
+      c.receiveShadow = true;
+      c.castShadow = true;
+    }
+  });
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);

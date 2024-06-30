@@ -45,7 +45,7 @@ export class Player {
             this.mesh.rotation.y += Math.PI / 2;
 
             this.mixer = new THREE.AnimationMixer(this.mesh);
-            console.log(fbx);
+            // console.log(fbx);
 
             var onLoad = (animName, anim, index) => {
                 const clip = anim.animations[index];
