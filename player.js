@@ -171,7 +171,7 @@ export class PlayerController {
         document.addEventListener("mouseup", (e) => this.onMouseUp(e), false);
         document.addEventListener("wheel", (e) => this.onMouseWheel(e), false);
     }
-    
+
     onMouseDown(event) {
         this.mouseDown = true;
     }
@@ -225,6 +225,14 @@ export class PlayerController {
             case "g".charCodeAt(0):
                 this.keys['freeMode'] = !this.keys['freeMode'];
                 break;
+            case "N".charCodeAt(0):
+            case "n".charCodeAt(0):
+                this.keys['nightMode'] = true
+                break;
+            case "M".charCodeAt(0):
+            case "m".charCodeAt(0):
+                this.keys['dayMode'] = true
+                break;
         }
     }
     onKeyUp(event) {
@@ -244,6 +252,14 @@ export class PlayerController {
             case "D".charCodeAt(0):
             case "d".charCodeAt(0):
                 this.keys["right"] = false;
+                break;
+            case "N".charCodeAt(0):
+            case "n".charCodeAt(0):
+                this.keys['nightMode'] = false
+                break;
+            case "M".charCodeAt(0):
+            case "m".charCodeAt(0):
+                this.keys['dayMode'] = false
                 break;
         }
     }

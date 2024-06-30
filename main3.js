@@ -36,27 +36,26 @@ controls.update();
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 1.0);
-var dirLight = new THREE.DirectionalLight(color, 3);
+var dirLight = new THREE.DirectionalLight(color, 8);
 dirLight.position.set(0, 50, 0);
 dirLight.castShadow = true;
 dirLight.shadow.camera.near = 1;
-dirLight.shadow.camera.far = 90000; 
-dirLight.shadow.camera.right = 100; 
-dirLight.shadow.camera.left = -100; 
-dirLight.shadow.camera.top = 100; 
-dirLight.shadow.camera.bottom = -100; 
-dirLight.shadow.mapSize.width = 4096; 
+dirLight.shadow.camera.far = 90000;
+dirLight.shadow.camera.right = 100;
+dirLight.shadow.camera.left = -100;
+dirLight.shadow.camera.top = 100;
+dirLight.shadow.camera.bottom = -100;
+dirLight.shadow.mapSize.width = 4096;
 dirLight.shadow.mapSize.height = 4096;
 
 scene.add(dirLight);
 // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
 // Ambient Light
-// var ambLight = new THREE.AmbientLight(0x000038);
-// ambLight.intensity = 10;
-// scene.add(ambLight);
-
-
+var ambLight = new THREE.AmbientLight(color);
+ambLight.intensity = 0.5;
+ambLight.name = 'ambLight_day'
+scene.add(ambLight);
 
 // plane
 {
@@ -121,48 +120,12 @@ mapLoader.load("Map.gltf", function (gltf) {
   scene.add(model);
 });
 
-// Langit
+// Langit dan matahari
 let sky = new Sky();
 let sun = new THREE.Vector3();
 sky.scale.setScalar(450000);
 scene.add(sky);
 
-var point_light = [
-  [1.279, 5.583, 4.007],
-  [-3.051, 5.788, -4.046],
-  [2.548, 5.63, -20.145],
-  [28.205, 5.908, 20.436],
-  [46.883, 5.624, 18.004],
-  [28.192, 5.908, 20.972],
-  [50.285, 5.374, 18.119],
-  [46.877, 5.553, 9.513],
-  [49.543, 5.638, 9.838],
-  [32.874, 5.592, 27.539],
-  [32.873, 5.583, 32.479],
-  [39.403, 5.583, 32.509],
-  [39.449, 5.584, 27.51],
-  [46.674, 5.366, 32.435],
-  [50.467, 5.642, 32.494],
-  [46.28, 5.623, 27.494],
-  [50.409, 5.657, 27.509],
-  [57.924, 5.563, 27.483],
-  [57.77, 5.623, 32.484],
-  [64.085, 5.399, 27.417],
-  [64.013, 5.69, 32.448],
-  [46.855, 5.553, 42.445],
-  [50.064, 5.353, 42.456],
-  [46.834, 5.607, 50.509],
-  [49.994, 5.566, 50.463],
-];
-
-// Lampu Jalan
-for (var i = 0; i < point_light.length; i++) {
-  light = new THREE.PointLight(0xedcd6b, 30);
-  light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
-  scene.add(light);
-}
-
-// Langit dan matahari
 const uniforms = sky.material.uniforms;
 
 uniforms["turbidity"].value = 10;
@@ -214,6 +177,9 @@ setTimeout(() => {
   showBubbles = false;
 }, 10000);
 
+console.log(scene);
+var isAmbient = false;
+var isDir = false;
 function render(dt) {
   if (player.controller.keys["freeMode"]) {
     controls.enabled = true;
@@ -237,13 +203,110 @@ function render(dt) {
         )
       );
 
+    if (player.controller.keys['nightMode']) {
+      isDir = false;
+      uniforms["sunPosition"].value.set(0, 0, 0);
+
+      scene.children.forEach(s => {
+        if (s instanceof THREE.DirectionalLight) {
+          scene.remove(s);
+        }
+
+        if (s.name == 'ambLight_day') {
+          scene.remove(s);
+        }
+
+        if (s.name == 'ambLight_night') {
+          isAmbient = true;
+        }
+      });
+
+      if (!isAmbient) {
+        var point_light = [
+          [1.279, 5.583, 4.007],
+          [-3.051, 5.788, -4.046],
+          [2.548, 5.63, -20.145],
+          [28.205, 5.908, 20.436],
+          [46.883, 5.624, 18.004],
+          [28.192, 5.908, 20.972],
+          [50.285, 5.374, 18.119],
+          [46.877, 5.553, 9.513],
+          [49.543, 5.638, 9.838],
+          [32.874, 5.592, 27.539],
+          [32.873, 5.583, 32.479],
+          [39.403, 5.583, 32.509],
+          [39.449, 5.584, 27.51],
+          [46.674, 5.366, 32.435],
+          [50.467, 5.642, 32.494],
+          [46.28, 5.623, 27.494],
+          [50.409, 5.657, 27.509],
+          [57.924, 5.563, 27.483],
+          [57.77, 5.623, 32.484],
+          [64.085, 5.399, 27.417],
+          [64.013, 5.69, 32.448],
+          [46.855, 5.553, 42.445],
+          [50.064, 5.353, 42.456],
+          [46.834, 5.607, 50.509],
+          [49.994, 5.566, 50.463],
+        ];
+        // Lampu Jalan
+        for (var i = 0; i < point_light.length; i++) {
+          light = new THREE.PointLight(0xedcd6b, 30);
+          light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
+          scene.add(light);
+        }
+
+        var ambLight = new THREE.AmbientLight(0x000038);
+        ambLight.intensity = 10;
+        ambLight.name = 'ambLight_night'
+        scene.add(ambLight);
+      }
+    }
+
+    if (player.controller.keys['dayMode']) {
+      console.log(scene);
+      isAmbient = false;
+      uniforms['sunPosition'].value.copy(sun);
+
+      scene.children.forEach(s => {
+        if (s.name == 'ambLight_night') {
+          scene.remove(s);
+        }
+
+        if (s instanceof THREE.PointLight) {
+          scene.remove(s);
+        }
+      });
+
+      if (!isDir) {
+        isDir = true;
+        var dirLight = new THREE.DirectionalLight(color, 8);
+        dirLight.position.set(0, 50, 0);
+        dirLight.castShadow = true;
+        dirLight.shadow.camera.near = 1;
+        dirLight.shadow.camera.far = 90000;
+        dirLight.shadow.camera.right = 100;
+        dirLight.shadow.camera.left = -100;
+        dirLight.shadow.camera.top = 100;
+        dirLight.shadow.camera.bottom = -100;
+        dirLight.shadow.mapSize.width = 4096;
+        dirLight.shadow.mapSize.height = 4096;
+        scene.add(dirLight);
+
+        var ambLight = new THREE.AmbientLight(color);
+        ambLight.intensity = 0.5;
+        ambLight.name = 'ambLight_day';
+        scene.add(ambLight);
+      }
+    }
+
     player.update(dt);
 
-    if (isOrbitalMode && player.mesh) {
-      const radius = 5; // Distance from the player
-      const speed = 0.038; // Orbit speed
-      player.camera.orbit(player.mesh.position, radius, speed);
-    }
+    // if (isOrbitalMode && player.mesh) {
+    //   const radius = 5; // Distance from the player
+    //   const speed = 0.038; // Orbit speed
+    //   player.camera.orbit(player.mesh.position, radius, speed);
+    // }
   }
 
   renderer.render(scene, camera);
