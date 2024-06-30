@@ -27,9 +27,9 @@ camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
 
 // Orbit Controls
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.target.set(0, 5, 0);
-// controls.update();
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 5, 0);
+controls.update();
 
 // LIGHT
 // Directional Light
@@ -42,9 +42,9 @@ dirLight.castShadow = true;
 dirLight.shadow.camera.near = 1;
 dirLight.shadow.camera.far = 50;
 dirLight.shadow.camera.right = 15;
-dirLight.shadow.camera.left = - 15;
+dirLight.shadow.camera.left = -15;
 dirLight.shadow.camera.top = 15;
-dirLight.shadow.camera.bottom = - 15;
+dirLight.shadow.camera.bottom = -15;
 dirLight.shadow.mapSize.width = 1024;
 dirLight.shadow.mapSize.height = 1024;
 // scene.add(directionalLight);
@@ -52,42 +52,48 @@ dirLight.shadow.mapSize.height = 1024;
 // directionalLight.target.position.set(-5, 0, 0);
 // scene.add(directionalLight.target);
 scene.add(dirLight);
-// scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
-// scene.add(light.target);
-
-// Hemisphere Light
-// light = new THREE.HemisphereLight(0xb1e1ff, 0xb97a20, 5); //skyColor, groundColor, intensity
-// scene.add(light);
-
-// Point Light
-// light = new THREE.PointLight(0xffff00, 500); //color, intensity
-// light.position.set(10, 10, 0);
-// scene.add(light);
-
-// Spot Light
-// light = new THREE.SpotLight(0xff0000, 500); //color, intensity
-// light.position.set(10, 10, 0);
-// scene.add(light);
 
 //Geometry
 const objects = [];
 
-// plane
-// {
-//   var planetGeo = new THREE.PlaneGeometry(200, 200);
-//   var planetMat = new THREE.MeshPhongMaterial({ color: "#4a250d" });
-//   var mesh = new THREE.Mesh(planetGeo, planetMat);
-//   mesh.rotation.x = Math.PI * -0.5;
-//   mesh.position.y = -15;
-//   scene.add(mesh);
-// }
+// Bubbles
+let bubbles = [];
+function createBubbles() {
+  const bubbleGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+  const bubbleMaterial = new THREE.MeshPhongMaterial({
+    color: 0x9fdbfc, 
+    opacity: 0.3, 
+    transparent: true,
+    roughness: 0.1,
+    metalness: 0.9,
+    reflectivity: 1,
+  });
+
+  for (let i = 0; i < 1000; i++) {
+    const bubble = new THREE.Mesh(bubbleGeometry, bubbleMaterial);
+    bubble.position.set(
+      (Math.random() - 0.5) * 50,
+      (Math.random() - 0.5) * 50,
+      (Math.random() - 0.5) * 50
+    );
+    bubble.velocity = new THREE.Vector3(
+      (Math.random() - 0.5) * 0.1,
+      (Math.random() - 0.5) * 0.1,
+      (Math.random() - 0.5) * 0.1
+    );
+    scene.add(bubble);
+    bubbles.push(bubble);
+  }
+}
+
+createBubbles();
 
 // GLTF
 const mapLoader = new GLTFLoader().setPath("resources/project/");
 mapLoader.load("Map.gltf", function (gltf) {
   const model = gltf.scene;
 
-  model.traverse(c => {
+  model.traverse((c) => {
     if (c.isMesh) {
       c.receiveShadow = true;
       c.castShadow = true;
@@ -177,9 +183,12 @@ var player = new Player(
 );
 
 let isOrbitalMode = true;
+let showBubbles = true;
 
 setTimeout(() => {
   isOrbitalMode = false;
+  bubbles.forEach((bubble) => scene.remove(bubble));
+  showBubbles = false;
 }, 10000);
 
 function render(dt) {
@@ -187,7 +196,7 @@ function render(dt) {
 
   if (isOrbitalMode && player.mesh) {
     const radius = 5; // Distance dari player
-    const speed = 0.018; // Speedorbit
+    const speed = 0.0175; // Speedorbit
     player.camera.orbit(player.mesh.position, radius, speed);
   }
 
@@ -201,7 +210,7 @@ var time_prev = 0;
 function animate(time) {
   var dt = time - time_prev;
   dt *= 0.1;
-  render(clock.getDelta())
+  render(clock.getDelta());
 
   objects.forEach((obj) => {
     obj.rotation.z += dt * 0.01;
@@ -209,6 +218,13 @@ function animate(time) {
   const delta = clock.getDelta();
 
   if (mixer) mixer.update(delta);
+
+  // bubbles
+  if (showBubbles) {
+    bubbles.forEach((bubble) => {
+      bubble.position.add(bubble.velocity);
+    });
+  }
 
   renderer.render(scene, camera);
 
