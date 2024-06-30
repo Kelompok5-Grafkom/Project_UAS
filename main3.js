@@ -36,17 +36,17 @@ controls.update();
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 1.0);
-var dirLight = new THREE.DirectionalLight(color, 5);
+var dirLight = new THREE.DirectionalLight(color, 3);
 dirLight.position.set(0, 50, 0);
 dirLight.castShadow = true;
 dirLight.shadow.camera.near = 1;
-dirLight.shadow.camera.far = 50;
-dirLight.shadow.camera.right = 15;
-dirLight.shadow.camera.left = -15;
-dirLight.shadow.camera.top = 15;
-dirLight.shadow.camera.bottom = -15;
-dirLight.shadow.mapSize.width = 1024;
-dirLight.shadow.mapSize.height = 1024;
+dirLight.shadow.camera.far = 90000; 
+dirLight.shadow.camera.right = 100; 
+dirLight.shadow.camera.left = -100; 
+dirLight.shadow.camera.top = 100; 
+dirLight.shadow.camera.bottom = -100; 
+dirLight.shadow.mapSize.width = 4096; 
+dirLight.shadow.mapSize.height = 4096;
 
 scene.add(dirLight);
 // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
@@ -60,12 +60,14 @@ scene.add(dirLight);
 
 // plane
 {
-  var planetGeo = new THREE.PlaneGeometry(2000000, 2000000);
-  var planetMat = new THREE.MeshPhongMaterial({ color: "#707070" });
-  var mesh = new THREE.Mesh(planetGeo, planetMat);
-  mesh.rotation.x = Math.PI * -0.5;
-  mesh.position.y = 0;
-  scene.add(mesh);
+  var planeGeo = new THREE.PlaneGeometry(20000, 20000);
+  var planeMat = new THREE.MeshPhongMaterial({ color: "#707070" });
+  var plane = new THREE.Mesh(planeGeo, planeMat);
+  plane.rotation.x = Math.PI * -0.5;
+  plane.position.y = 1.18;
+  plane.castShadow = true;
+  plane.receiveShadow = true;
+  scene.add(plane);
 }
 
 //Geometry
@@ -239,7 +241,7 @@ function render(dt) {
 
     if (isOrbitalMode && player.mesh) {
       const radius = 5; // Distance from the player
-      const speed = 0.0175; // Orbit speed
+      const speed = 0.038; // Orbit speed
       player.camera.orbit(player.mesh.position, radius, speed);
     }
   }
