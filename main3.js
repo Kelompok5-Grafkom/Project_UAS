@@ -36,7 +36,7 @@ camera.lookAt(0, 0, 0);
 
 var color = 0xffffff;
 var light = new THREE.DirectionalLight(color, 1.0);
-var dirLight = new THREE.DirectionalLight(color, 3);
+var dirLight = new THREE.DirectionalLight(color, 5);
 dirLight.position.set(0, 50, 0);
 dirLight.castShadow = true;
 dirLight.shadow.camera.near = 1;
@@ -165,6 +165,7 @@ objLoader.load("car1.gltf", function (gltf) {
   scene.add(model);
 });
 
+// THIRD PERSON
 var player = new Player(
   new ThirdPersonCamera(
     camera,
@@ -176,20 +177,26 @@ var player = new Player(
   10
 );
 
-let isOrbitalMode = true;
+// let isOrbitalMode = true;
 
-setTimeout(() => {
-  isOrbitalMode = false;
-}, 10000);
+// setTimeout(() => {
+//   isOrbitalMode = false;
+// }, 10000);
 
 function render(dt) {
+
+  if (player.controller.keys['firstPerson'])
+    player.setCamera(new ThirdPersonCamera(camera, new THREE.Vector3(0.2, 1, 0), new THREE.Vector3(0.5, 1, 0)));
+  if (player.controller.keys['thirdPerson'])
+    player.setCamera(new ThirdPersonCamera(camera, new THREE.Vector3(-5, 2, 0), new THREE.Vector3(0, 0, 0)));
+
   player.update(dt);
 
-  if (isOrbitalMode && player.mesh) {
-    const radius = 5; // Distance dari player
-    const speed = 0.018; // Speedorbit
-    player.camera.orbit(player.mesh.position, radius, speed);
-  }
+  // if (isOrbitalMode && player.mesh) {
+  //   const radius = 5; // Distance dari player
+  //   const speed = 0.018; // Speedorbit
+  //   player.camera.orbit(player.mesh.position, radius, speed);
+  // }
 
   renderer.render(scene, camera);
 }

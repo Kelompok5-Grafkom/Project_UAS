@@ -25,6 +25,10 @@ export class Player {
         this.loadModel();
     }
 
+    setCamera(camera) {
+        this.camera = camera;
+    }
+
     loadModel() {
         var loader = new FBXLoader();
         loader.setPath('./resources/project/');
@@ -84,6 +88,11 @@ export class Player {
                 direction.z = 1;
                 this.mesh.rotation.y = 0;
             }
+            // if (this.controller.keys['firstPerson'])
+            //     this.camera = new ThirdPersonCamera(this.camera, new THREE.Vector3(-5, 2, 0), new THREE.Vector3(0, 0, 0));
+            // if (this.controller.keys['thirdPerson'])
+            //     this.camera = new ThirdPersonCamera(this.camera, new THREE.Vector3(0.2, 1, 0), new THREE.Vector3(0.5, 1, 0));
+
             this.lastRotation = this.mesh.rotation.y;
             // console.log(direction.length())
             if (direction.length() == 0) {
@@ -192,6 +201,16 @@ export class PlayerController {
             case "D".charCodeAt(0):
             case "d".charCodeAt(0):
                 this.keys["right"] = true;
+                break;
+            case "F".charCodeAt(0):
+            case "f".charCodeAt(0):
+                this.keys['firstPerson'] = true;
+                this.keys['thirdPerson'] = false;
+                break;
+            case "T".charCodeAt(0):
+            case "t".charCodeAt(0):
+                this.keys['thirdPerson'] = true;
+                this.keys['firstPerson'] = false;
                 break;
         }
     }
