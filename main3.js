@@ -53,6 +53,16 @@ dirLight.shadow.mapSize.height = 1024;
 // scene.add(directionalLight.target);
 scene.add(dirLight);
 
+// plane
+{
+  var planetGeo = new THREE.PlaneGeometry(2000000, 2000000);
+  var planetMat = new THREE.MeshPhongMaterial({ color: "#707070" });
+  var mesh = new THREE.Mesh(planetGeo, planetMat);
+  mesh.rotation.x = Math.PI * -0.5;
+  mesh.position.y = 0;
+  scene.add(mesh);
+}
+
 //Geometry
 const objects = [];
 
