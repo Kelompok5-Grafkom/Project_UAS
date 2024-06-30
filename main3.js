@@ -212,8 +212,8 @@ function render(dt) {
       player.setCamera(
         new ThirdPersonCamera(
           camera,
-          new THREE.Vector3(0.2, 1, 0),
-          new THREE.Vector3(0.5, 1, 0)
+          new THREE.Vector3(0.2, 1.3, 0),
+          new THREE.Vector3(0.5, 1.3, 0)
         )
       );
     if (player.controller.keys["thirdPerson"])

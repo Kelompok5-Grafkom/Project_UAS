@@ -32,8 +32,8 @@ export class Player {
     loadModel() {
         var loader = new FBXLoader();
         loader.setPath('./resources/project/');
-        loader.load('Male_Casual.fbx', (fbx) => {
-            fbx.scale.setScalar(0.003);
+        loader.load('Breathing Idle.fbx', (fbx) => {
+            fbx.scale.setScalar(0.005);
             fbx.position.y = 1.25;
             fbx.traverse(c => {
                 if (c.isMesh) {
@@ -59,8 +59,8 @@ export class Player {
 
             const loader = new FBXLoader();
             loader.setPath('./resources/project/');
-            loader.load('Male_Casual.fbx', (fbx) => { onLoad('idle', fbx, 3) });
-            loader.load('Male_Casual.fbx', (fbx) => { onLoad('run', fbx, 1) });
+            loader.load('Breathing Idle.fbx', (fbx) => { onLoad('idle', fbx, 0) });
+            loader.load('Running.fbx', (fbx) => { onLoad('run', fbx, 0) });
 
 
         });
