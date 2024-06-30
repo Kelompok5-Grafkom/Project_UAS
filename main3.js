@@ -71,8 +71,8 @@ let bubbles = [];
 function createBubbles() {
   const bubbleGeometry = new THREE.SphereGeometry(0.1, 32, 32);
   const bubbleMaterial = new THREE.MeshPhongMaterial({
-    color: 0x9fdbfc, 
-    opacity: 0.3, 
+    color: 0x9fdbfc,
+    opacity: 0.3,
     transparent: true,
     roughness: 0.1,
     metalness: 0.9,
@@ -203,18 +203,35 @@ setTimeout(() => {
 }, 10000);
 
 function render(dt) {
+  if (player.controller.keys["freeMode"]) {
+    controls.enabled = true;
+  } else {
+    controls.enabled = false;
 
-  if (player.controller.keys['firstPerson'])
-    player.setCamera(new ThirdPersonCamera(camera, new THREE.Vector3(0.2, 1, 0), new THREE.Vector3(0.5, 1, 0)));
-  if (player.controller.keys['thirdPerson'])
-    player.setCamera(new ThirdPersonCamera(camera, new THREE.Vector3(-5, 2, 0), new THREE.Vector3(0, 0, 0)));
+    if (player.controller.keys["firstPerson"])
+      player.setCamera(
+        new ThirdPersonCamera(
+          camera,
+          new THREE.Vector3(0.2, 1, 0),
+          new THREE.Vector3(0.5, 1, 0)
+        )
+      );
+    if (player.controller.keys["thirdPerson"])
+      player.setCamera(
+        new ThirdPersonCamera(
+          camera,
+          new THREE.Vector3(-5, 2, 0),
+          new THREE.Vector3(0, 0, 0)
+        )
+      );
 
-  player.update(dt);
+    player.update(dt);
 
-  if (isOrbitalMode && player.mesh) {
-    const radius = 5; // Distance dari player
-    const speed = 0.0175; // Speedorbit
-    player.camera.orbit(player.mesh.position, radius, speed);
+    if (isOrbitalMode && player.mesh) {
+      const radius = 5; // Distance from the player
+      const speed = 0.0175; // Orbit speed
+      player.camera.orbit(player.mesh.position, radius, speed);
+    }
   }
 
   renderer.render(scene, camera);

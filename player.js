@@ -157,6 +157,9 @@ export class PlayerController {
             backward: false,
             left: false,
             right: false,
+            firstPerson: false,
+            thirdPerson: false,
+            freeMode: false
         };
         this.mousePos = new THREE.Vector2();
         this.mouseDown = false;
@@ -166,7 +169,9 @@ export class PlayerController {
         document.addEventListener("mousemove", (e) => this.onMouseMove(e), false);
         document.addEventListener("mousedown", (e) => this.onMouseDown(e), false);
         document.addEventListener("mouseup", (e) => this.onMouseUp(e), false);
+        document.addEventListener("wheel", (e) => this.onMouseWheel(e), false);
     }
+    
     onMouseDown(event) {
         this.mouseDown = true;
     }
@@ -183,6 +188,10 @@ export class PlayerController {
             this.mousePos.multiplyScalar(-1)
         );
         this.mousePos.copy(currentMousePos);
+    }
+    onMouseWheel(event) {
+        this.camera.zoom += event.deltaY * 0.001;
+        this.camera.updateProjectionMatrix();
     }
     onKeyDown(event) {
         switch (event.keyCode) {
@@ -211,6 +220,10 @@ export class PlayerController {
             case "t".charCodeAt(0):
                 this.keys['thirdPerson'] = true;
                 this.keys['firstPerson'] = false;
+                break;
+            case "G".charCodeAt(0):
+            case "g".charCodeAt(0):
+                this.keys['freeMode'] = !this.keys['freeMode'];
                 break;
         }
     }
