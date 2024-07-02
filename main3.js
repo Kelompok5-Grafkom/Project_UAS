@@ -104,6 +104,7 @@ function createBubbles() {
 
 createBubbles();
 
+let mapBoundingBoxes = [];
 // GLTF
 const mapLoader = new GLTFLoader().setPath("resources/project/");
 mapLoader.load("Map.gltf", function (gltf) {
@@ -113,6 +114,11 @@ mapLoader.load("Map.gltf", function (gltf) {
     if (c.isMesh) {
       c.receiveShadow = true;
       c.castShadow = true;
+
+      if (c.name !== 'Ground') {
+        const box = new THREE.Box3().setFromObject(c);
+        mapBoundingBoxes.push(box);
+      }
     }
   });
   renderer.compileAsync(model, camera, scene);
@@ -366,7 +372,7 @@ function render(dt) {
       }
     }
 
-    player.update(dt, carBoundingBoxes);
+    player.update(dt, carBoundingBoxes.concat(mapBoundingBoxes));
 
     // if (isOrbitalMode && player.mesh) {
     //   const radius = 5; // Distance from the player
