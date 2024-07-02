@@ -115,7 +115,7 @@ mapLoader.load("Map.gltf", function (gltf) {
       c.receiveShadow = true;
       c.castShadow = true;
 
-      if (c.name !== 'Ground' && !c.name.includes('SM_Electric_Pole')) {
+      if (c.name !== 'Ground' && !c.name.includes('SM_Electric_Pole') && !c.name.includes('SM_Street_Board')) {
         const box = new THREE.Box3().setFromObject(c);
         mapBoundingBoxes.push(box);
       }
@@ -212,7 +212,7 @@ objLoader.load("car4.gltf", function (gltf) {
   const model = gltf.scene;
 
   model.position.y = 1.25;
-  model.position.x = -5;
+  model.position.x = -12;
   model.position.z = 2;
   model.traverse((c) => {
     if (c.isMesh) {
@@ -450,5 +450,15 @@ function animate(time) {
   time_prev = time;
   requestAnimationFrame(animate);
 }
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === '+') {
+    camera.fov = Math.max(10, camera.fov - 1);
+    camera.updateProjectionMatrix();
+  } else if (event.key === '-') {
+    camera.fov = Math.min(100, camera.fov + 1); 
+    camera.updateProjectionMatrix();
+  }
+});
 
 requestAnimationFrame(animate);
