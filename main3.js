@@ -138,6 +138,7 @@ const theta = THREE.MathUtils.degToRad(180);
 sun.setFromSphericalCoords(1, phi, theta);
 uniforms["sunPosition"].value.copy(sun);
 
+let carBoundingBox = new THREE.Box3();
 const objLoader = new GLTFLoader().setPath("resources/object/object/");
 objLoader.load("car1.gltf", function (gltf) {
   const model = gltf.scene;
@@ -154,6 +155,9 @@ objLoader.load("car1.gltf", function (gltf) {
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
+
+  // Create bounding box for car
+  carBoundingBox.setFromObject(model);
 });
 
 objLoader.load("car2.gltf", function (gltf) {
@@ -353,7 +357,7 @@ function render(dt) {
       }
     }
 
-    player.update(dt);
+    player.update(dt, carBoundingBox);
 
     // if (isOrbitalMode && player.mesh) {
     //   const radius = 5; // Distance from the player

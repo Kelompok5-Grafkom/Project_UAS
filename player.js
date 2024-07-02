@@ -11,6 +11,7 @@ export class Player {
         this.rotationVector = new THREE.Vector3(0, 0, 0);
         this.animations = {};
         this.lastRotation = 0;
+        this.boundingBox = new THREE.Box3();
 
         this.camera.setup(new THREE.Vector3(0, 0, 0), this.rotationVector);
 
@@ -67,7 +68,7 @@ export class Player {
 
     }
 
-    update(dt) {
+    update(dt, carBoundingBox) {
         if (this.mesh && this.animations) {
             this.lastRotation = this.mesh.rotation.y;
             var direction = new THREE.Vector3(0, 0, 0);
@@ -93,7 +94,7 @@ export class Player {
             // if (this.controller.keys['thirdPerson'])
             //     this.camera = new ThirdPersonCamera(this.camera, new THREE.Vector3(0.2, 1, 0), new THREE.Vector3(0.5, 1, 0));
 
-            this.lastRotation = this.mesh.rotation.y;
+            // this.lastRotation = this.mesh.rotation.y;
             // console.log(direction.length())
             if (direction.length() == 0) {
                 if (this.animations['idle']) {
@@ -134,13 +135,32 @@ export class Player {
                 this.rotationVector.y
             );
 
-            this.mesh.position.add(
+            const newPosition = new THREE.Vector3().copy(this.mesh.position);
+            newPosition.add(
                 forwardVector.multiplyScalar(dt * this.speed * direction.x)
             );
-            this.mesh.position.add(
+            newPosition.add(
                 rightVector.multiplyScalar(dt * this.speed * direction.z)
             );
 
+            this.boundingBox.setFromObject(this.mesh);
+
+            if (this.boundingBox.intersectsBox(carBoundingBox)) {
+                // Adjust position
+                if (direction.x > 0) {
+                    newPosition.x = Math.min(newPosition.x, carBoundingBox.min.x - this.boundingBox.min.x);
+                } else if (direction.x < 0) {
+                    newPosition.x = Math.max(newPosition.x, carBoundingBox.max.x - this.boundingBox.max.x);
+                }
+
+                if (direction.z > 0) {
+                    newPosition.z = Math.min(newPosition.z, carBoundingBox.min.z - this.boundingBox.min.z);
+                } else if (direction.z < 0) {
+                    newPosition.z = Math.max(newPosition.z, carBoundingBox.max.z - this.boundingBox.max.z);
+                }
+            }
+
+            this.mesh.position.copy(newPosition);
             this.camera.setup(this.mesh.position, this.rotationVector);
 
             if (this.mixer) {
