@@ -249,10 +249,144 @@ setTimeout(() => {
   showBubbles = false;
 }, 10000);
 
+var keys = {
+  nightMode: false,
+  dayMode: false
+};
+
+function onKeyDown(event) {
+  switch (event.keyCode) {
+    case "N".charCodeAt(0):
+    case "n".charCodeAt(0):
+      keys['nightMode'] = true
+      break;
+    case "M".charCodeAt(0):
+    case "m".charCodeAt(0):
+      keys['dayMode'] = true
+      break;
+  }
+}
+
+function onKeyUp(event) {
+  switch (event.keyCode) {
+    case "N".charCodeAt(0):
+    case "n".charCodeAt(0):
+      keys['nightMode'] = false
+      break;
+    case "M".charCodeAt(0):
+    case "m".charCodeAt(0):
+      keys['dayMode'] = false
+      break;
+  }
+}
+
+document.addEventListener("keydown", (e) => onKeyDown(e), false);
+document.addEventListener("keyup", (e) => onKeyUp(e), false);
+
 console.log(scene);
 var isAmbient = false;
 var isDir = false;
 function render(dt) {
+  console.log(keys['nightMode']);
+
+  // Night & Day mode
+  if (keys['nightMode']) {
+    isDir = false;
+    uniforms["sunPosition"].value.set(0, 0, 0);
+
+    scene.children.forEach(s => {
+      if (s instanceof THREE.DirectionalLight) {
+        scene.remove(s);
+      }
+
+      if (s.name == 'ambLight_day') {
+        scene.remove(s);
+      }
+
+      if (s.name == 'ambLight_night') {
+        isAmbient = true;
+      }
+    });
+
+    if (!isAmbient) {
+      var point_light = [
+        [1.279, 5.583, 4.007],
+        [-3.051, 5.788, -4.046],
+        [2.548, 5.63, -20.145],
+        [28.205, 5.908, 20.436],
+        [46.883, 5.624, 18.004],
+        [28.192, 5.908, 20.972],
+        [50.285, 5.374, 18.119],
+        [46.877, 5.553, 9.513],
+        [49.543, 5.638, 9.838],
+        [32.874, 5.592, 27.539],
+        [32.873, 5.583, 32.479],
+        [39.403, 5.583, 32.509],
+        [39.449, 5.584, 27.51],
+        [46.674, 5.366, 32.435],
+        [50.467, 5.642, 32.494],
+        [46.28, 5.623, 27.494],
+        [50.409, 5.657, 27.509],
+        [57.924, 5.563, 27.483],
+        [57.77, 5.623, 32.484],
+        [64.085, 5.399, 27.417],
+        [64.013, 5.69, 32.448],
+        [46.855, 5.553, 42.445],
+        [50.064, 5.353, 42.456],
+        [46.834, 5.607, 50.509],
+        [49.994, 5.566, 50.463],
+      ];
+      // Lampu Jalan
+      for (var i = 0; i < point_light.length; i++) {
+        light = new THREE.PointLight(0xedcd6b, 30);
+        light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
+        scene.add(light);
+      }
+
+      var ambLight = new THREE.AmbientLight(0x000038);
+      ambLight.intensity = 10;
+      ambLight.name = 'ambLight_night'
+      scene.add(ambLight);
+    }
+  }
+
+  if (keys['dayMode']) {
+    console.log(scene);
+    isAmbient = false;
+    uniforms['sunPosition'].value.copy(sun);
+
+    scene.children.forEach(s => {
+      if (s.name == 'ambLight_night') {
+        scene.remove(s);
+      }
+
+      if (s instanceof THREE.PointLight) {
+        scene.remove(s);
+      }
+    });
+
+    if (!isDir) {
+      isDir = true;
+      var dirLight = new THREE.DirectionalLight(color, 8);
+      dirLight.position.set(0, 50, 0);
+      dirLight.castShadow = true;
+      dirLight.shadow.camera.near = 1;
+      dirLight.shadow.camera.far = 90000;
+      dirLight.shadow.camera.right = 100;
+      dirLight.shadow.camera.left = -100;
+      dirLight.shadow.camera.top = 100;
+      dirLight.shadow.camera.bottom = -100;
+      dirLight.shadow.mapSize.width = 4096;
+      dirLight.shadow.mapSize.height = 4096;
+      scene.add(dirLight);
+
+      var ambLight = new THREE.AmbientLight(color);
+      ambLight.intensity = 0.5;
+      ambLight.name = 'ambLight_day';
+      scene.add(ambLight);
+    }
+  }
+
   if (player.controller.keys["freeMode"]) {
     controls.enabled = true;
   } else {
@@ -275,103 +409,6 @@ function render(dt) {
           new THREE.Vector3(0, 0, 0)
         )
       );
-
-    if (player.controller.keys['nightMode']) {
-      isDir = false;
-      uniforms["sunPosition"].value.set(0, 0, 0);
-
-      scene.children.forEach(s => {
-        if (s instanceof THREE.DirectionalLight) {
-          scene.remove(s);
-        }
-
-        if (s.name == 'ambLight_day') {
-          scene.remove(s);
-        }
-
-        if (s.name == 'ambLight_night') {
-          isAmbient = true;
-        }
-      });
-
-      if (!isAmbient) {
-        var point_light = [
-          [1.279, 5.583, 4.007],
-          [-3.051, 5.788, -4.046],
-          [2.548, 5.63, -20.145],
-          [28.205, 5.908, 20.436],
-          [46.883, 5.624, 18.004],
-          [28.192, 5.908, 20.972],
-          [50.285, 5.374, 18.119],
-          [46.877, 5.553, 9.513],
-          [49.543, 5.638, 9.838],
-          [32.874, 5.592, 27.539],
-          [32.873, 5.583, 32.479],
-          [39.403, 5.583, 32.509],
-          [39.449, 5.584, 27.51],
-          [46.674, 5.366, 32.435],
-          [50.467, 5.642, 32.494],
-          [46.28, 5.623, 27.494],
-          [50.409, 5.657, 27.509],
-          [57.924, 5.563, 27.483],
-          [57.77, 5.623, 32.484],
-          [64.085, 5.399, 27.417],
-          [64.013, 5.69, 32.448],
-          [46.855, 5.553, 42.445],
-          [50.064, 5.353, 42.456],
-          [46.834, 5.607, 50.509],
-          [49.994, 5.566, 50.463],
-        ];
-        // Lampu Jalan
-        for (var i = 0; i < point_light.length; i++) {
-          light = new THREE.PointLight(0xedcd6b, 30);
-          light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
-          scene.add(light);
-        }
-
-        var ambLight = new THREE.AmbientLight(0x000038);
-        ambLight.intensity = 10;
-        ambLight.name = 'ambLight_night'
-        scene.add(ambLight);
-      }
-    }
-
-    if (player.controller.keys['dayMode']) {
-      console.log(scene);
-      isAmbient = false;
-      uniforms['sunPosition'].value.copy(sun);
-
-      scene.children.forEach(s => {
-        if (s.name == 'ambLight_night') {
-          scene.remove(s);
-        }
-
-        if (s instanceof THREE.PointLight) {
-          scene.remove(s);
-        }
-      });
-
-      if (!isDir) {
-        isDir = true;
-        var dirLight = new THREE.DirectionalLight(color, 8);
-        dirLight.position.set(0, 50, 0);
-        dirLight.castShadow = true;
-        dirLight.shadow.camera.near = 1;
-        dirLight.shadow.camera.far = 90000;
-        dirLight.shadow.camera.right = 100;
-        dirLight.shadow.camera.left = -100;
-        dirLight.shadow.camera.top = 100;
-        dirLight.shadow.camera.bottom = -100;
-        dirLight.shadow.mapSize.width = 4096;
-        dirLight.shadow.mapSize.height = 4096;
-        scene.add(dirLight);
-
-        var ambLight = new THREE.AmbientLight(color);
-        ambLight.intensity = 0.5;
-        ambLight.name = 'ambLight_day';
-        scene.add(ambLight);
-      }
-    }
 
     player.update(dt, carBoundingBoxes.concat(mapBoundingBoxes));
 
