@@ -413,4 +413,14 @@ function animate(time) {
   requestAnimationFrame(animate);
 }
 
+window.addEventListener('keydown', (event) => {
+  if (event.key === '+') {
+    camera.fov = Math.max(10, camera.fov - 1);
+    camera.updateProjectionMatrix();
+  } else if (event.key === '-') {
+    camera.fov = Math.min(100, camera.fov + 1); 
+    camera.updateProjectionMatrix();
+  }
+});
+
 requestAnimationFrame(animate);
