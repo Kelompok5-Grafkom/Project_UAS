@@ -156,6 +156,59 @@ objLoader.load("car1.gltf", function (gltf) {
   scene.add(model);
 });
 
+objLoader.load("car2.gltf", function (gltf) {
+  const model = gltf.scene;
+
+  model.position.y = 1.25;
+  model.position.x = 22;
+  model.position.z = 10;
+  model.rotation.y = 1.57
+  model.traverse((c) => {
+    if (c.isMesh) {
+      c.receiveShadow = true;
+      c.castShadow = true;
+    }
+  });
+  renderer.compileAsync(model, camera, scene);
+
+  scene.add(model);
+});
+
+objLoader.load("car3.gltf", function (gltf) {
+  const model = gltf.scene;
+
+  model.position.y = 1.25;
+  model.position.x = 35;
+  model.position.z = -2;
+  model.rotation.y = 3.14;
+  model.traverse((c) => {
+    if (c.isMesh) {
+      c.receiveShadow = true;
+      c.castShadow = true;
+    }
+  });
+  renderer.compileAsync(model, camera, scene);
+
+  scene.add(model);
+});
+
+objLoader.load("car4.gltf", function (gltf) {
+  const model = gltf.scene;
+
+  model.position.y = 1.25;
+  model.position.x = -5;
+  model.position.z = 2;
+  model.traverse((c) => {
+    if (c.isMesh) {
+      c.receiveShadow = true;
+      c.castShadow = true;
+    }
+  });
+  renderer.compileAsync(model, camera, scene);
+
+  scene.add(model);
+});
+
 // THIRD PERSON
 var player = new Player(
   new ThirdPersonCamera(
