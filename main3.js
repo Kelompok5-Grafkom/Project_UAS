@@ -23,12 +23,12 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 0, 100);
+camera.position.set(0, 0, 0);
 camera.lookAt(0, 0, 0);
 
 // Orbit Controls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 5, 0);
+controls.target.set(0, 2, 0);
 controls.update();
 
 // LIGHT
@@ -263,7 +263,8 @@ function render(dt) {
         new ThirdPersonCamera(
           camera,
           new THREE.Vector3(0.2, 1.3, 0),
-          new THREE.Vector3(0.5, 1.3, 0)
+          new THREE.Vector3(0.5, 1.3, 0),
+          true
         )
       );
     if (player.controller.keys["thirdPerson"])

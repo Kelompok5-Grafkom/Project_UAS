@@ -11,8 +11,11 @@ export class Player {
         this.rotationVector = new THREE.Vector3(0, 0, 0);
         this.animations = {};
         this.lastRotation = 0;
+        this.cameraRotationX = 0;
+        this.cameraRotationY = 0;
+        this.cameraRotationZ = 0;
 
-        this.camera.setup(new THREE.Vector3(0, 0, 0), this.rotationVector);
+        this.camera.setup(new THREE.Vector3(0, 0, 0), this.rotationVector, this.cameraRotationY, this.cameraRotationZ);
 
         // this.mesh = new THREE.Mesh(
         //     new THREE.BoxGeometry(1,1,1),
@@ -108,10 +111,12 @@ export class Player {
                 direction.z = 1;
                 this.mesh.rotation.y = 0;
             }
-            // if (this.controller.keys['firstPerson'])
-            //     this.camera = new ThirdPersonCamera(this.camera, new THREE.Vector3(-5, 2, 0), new THREE.Vector3(0, 0, 0));
-            // if (this.controller.keys['thirdPerson'])
-            //     this.camera = new ThirdPersonCamera(this.camera, new THREE.Vector3(0.2, 1, 0), new THREE.Vector3(0.5, 1, 0));
+            if (this.controller.keys['shiftRight']) {
+                this.cameraRotationY += this.speed * dt
+            }
+            if (this.controller.keys['shiftLeft']) {
+                this.cameraRotationY -= this.speed * dt
+            }
 
             this.lastRotation = this.mesh.rotation.y;
             // console.log(direction.length())
@@ -170,7 +175,7 @@ export class Player {
             }
 
 
-            this.camera.setup(this.mesh.position, this.rotationVector);
+            this.camera.setup(this.mesh.position, this.rotationVector, this.cameraRotationY);
 
             if (this.mixer) {
                 this.mixer.update(dt);
@@ -262,6 +267,12 @@ export class PlayerController {
             case "m".charCodeAt(0):
                 this.keys['dayMode'] = true
                 break;
+            case 39:
+                this.keys['shiftRight'] = true
+                break;
+            case 37:
+                this.keys['shiftLeft'] = true
+                break
         }
     }
     onKeyUp(event) {
@@ -290,16 +301,23 @@ export class PlayerController {
             case "m".charCodeAt(0):
                 this.keys['dayMode'] = false
                 break;
+            case 39:
+                this.keys['shiftRight'] = false
+                break;
+            case 37:
+                this.keys['shiftLeft'] = false
+                break
         }
     }
 }
 
 export class ThirdPersonCamera {
-    constructor(camera, positionOffSet, targetOffSet) {
+    constructor(camera, positionOffSet, targetOffSet, isFirstPerson = false) {
         this.camera = camera;
         this.positionOffSet = positionOffSet;
         this.targetOffSet = targetOffSet;
         this.angle = 0;
+        this.isFirstPerson = isFirstPerson;
     }
 
     orbit(target, radius, speed) {
@@ -311,15 +329,29 @@ export class ThirdPersonCamera {
         this.camera.lookAt(target);
     }
 
-    setup(target, angle) {
+    setup(target, angle, cameraRotationY = 0, cameraRotationZ = 0, xLevel = 0) {
         var temp = new THREE.Vector3(0, 0, 0);
         temp.copy(this.positionOffSet);
-        temp.applyAxisAngle(new THREE.Vector3(angle.x, 1, 0), angle.y);
-        temp.applyAxisAngle(new THREE.Vector3(angle.y, 0, 1), angle.z);
-        temp.addVectors(target, temp);
+        temp.applyAxisAngle(new THREE.Vector3(angle.x, 1, 0), angle.y + cameraRotationY);
+        // temp.applyAxisAngle(new THREE.Vector3(angle.y, 0, 1), angle.z);
+        temp.add(target);
+
         this.camera.position.copy(temp);
-        temp = new THREE.Vector3(0, 0, 0);
-        temp.addVectors(target, this.targetOffSet);
-        this.camera.lookAt(temp);
+        if (this.isFirstPerson) {
+            this.camera.rotation.order = "YXZ"; // Ensure correct order of rotations
+            this.camera.rotation.y = angle.y + Math.PI - cameraRotationY; // Yaw
+            this.camera.rotation.x = -xLevel; // Pitch
+            this.camera.rotation.z = cameraRotationZ; // Roll (if needed)
+            temp = new THREE.Vector3();
+            temp.copy(this.targetOffSet);
+            temp.applyAxisAngle(new THREE.Vector3(angle.x, 1, 0), angle.y + cameraRotationY);
+            // temp.applyAxisAngle(new THREE.Vector3(angle.y, 0, 1), angle.z);
+            temp.add(target);
+            this.camera.lookAt(temp);
+        } else {
+            temp = new THREE.Vector3();
+            temp.addVectors(target, this.targetOffSet);
+            this.camera.lookAt(temp);
+        }
     }
 }
