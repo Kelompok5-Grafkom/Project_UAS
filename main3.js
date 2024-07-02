@@ -115,7 +115,7 @@ mapLoader.load("Map.gltf", function (gltf) {
       c.receiveShadow = true;
       c.castShadow = true;
 
-      if (c.name !== 'Ground') {
+      if (c.name !== 'Ground' && !c.name.includes('SM_Electric_Pole')) {
         const box = new THREE.Box3().setFromObject(c);
         mapBoundingBoxes.push(box);
       }
