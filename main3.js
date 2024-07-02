@@ -138,7 +138,7 @@ const theta = THREE.MathUtils.degToRad(180);
 sun.setFromSphericalCoords(1, phi, theta);
 uniforms["sunPosition"].value.copy(sun);
 
-let carBoundingBox = new THREE.Box3();
+let carBoundingBoxes = [];
 const objLoader = new GLTFLoader().setPath("resources/object/object/");
 objLoader.load("car1.gltf", function (gltf) {
   const model = gltf.scene;
@@ -156,8 +156,8 @@ objLoader.load("car1.gltf", function (gltf) {
 
   scene.add(model);
 
-  // Create bounding box for car
-  carBoundingBox.setFromObject(model);
+  const carBoundingBox = new THREE.Box3().setFromObject(model);
+  carBoundingBoxes.push(carBoundingBox);
 });
 
 objLoader.load("car2.gltf", function (gltf) {
@@ -176,6 +176,9 @@ objLoader.load("car2.gltf", function (gltf) {
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
+
+  const carBoundingBox = new THREE.Box3().setFromObject(model);
+  carBoundingBoxes.push(carBoundingBox);
 });
 
 objLoader.load("car3.gltf", function (gltf) {
@@ -194,6 +197,9 @@ objLoader.load("car3.gltf", function (gltf) {
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
+
+  const carBoundingBox = new THREE.Box3().setFromObject(model);
+  carBoundingBoxes.push(carBoundingBox);
 });
 
 objLoader.load("car4.gltf", function (gltf) {
@@ -211,6 +217,9 @@ objLoader.load("car4.gltf", function (gltf) {
   renderer.compileAsync(model, camera, scene);
 
   scene.add(model);
+
+  const carBoundingBox = new THREE.Box3().setFromObject(model);
+  carBoundingBoxes.push(carBoundingBox);
 });
 
 // THIRD PERSON
@@ -357,7 +366,7 @@ function render(dt) {
       }
     }
 
-    player.update(dt, carBoundingBox);
+    player.update(dt, carBoundingBoxes);
 
     // if (isOrbitalMode && player.mesh) {
     //   const radius = 5; // Distance from the player
