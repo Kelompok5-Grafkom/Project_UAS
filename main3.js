@@ -339,7 +339,7 @@ fbxLoader.load(
 var player = new Player(
   new ThirdPersonCamera(
     camera,
-    new THREE.Vector3(-5, 2, 0),
+    new THREE.Vector3(0, 2, -5),
     new THREE.Vector3(0, 0, 0)
   ),
   new PlayerController(),
@@ -507,8 +507,8 @@ function render(dt) {
       player.setCamera(
         new ThirdPersonCamera(
           camera,
-          new THREE.Vector3(0.2, 1.3, 0),
-          new THREE.Vector3(0.5, 1.3, 0),
+          new THREE.Vector3(0, 1.6, 0.5),
+          new THREE.Vector3(0, 1.6, 0),
           true
         )
       );
@@ -516,7 +516,7 @@ function render(dt) {
       player.setCamera(
         new ThirdPersonCamera(
           camera,
-          new THREE.Vector3(-5, 2, 0),
+          new THREE.Vector3(0, 2, -5),
           new THREE.Vector3(0, 0, 0)
         )
       );

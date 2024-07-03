@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
+import { shiftLeft, shiftRight } from "three/examples/jsm/nodes/Nodes.js";
 
 export class Player {
     constructor(camera, controller, scene, speed) {
@@ -9,6 +10,7 @@ export class Player {
         this.speed = speed;
         this.state = "idle";
         this.rotationVector = new THREE.Vector3(0, 0, 0);
+        this.currentRotation = new THREE.Euler(0, 0, 0);
         this.animations = {};
         this.lastRotation = 0;
         this.cameraRotationX = 0;
@@ -98,26 +100,29 @@ export class Player {
             var direction = new THREE.Vector3(0, 0, 0);
 
             if (this.controller.keys['forward']) {
-                direction.x = 1;
-                this.mesh.rotation.y = Math.PI / 2;
+                direction.z += this.speed * dt;
+                // this.mesh.rotation.y = Math.PI / 2;
             }
             if (this.controller.keys['backward']) {
-                direction.x = -1;
-                this.mesh.rotation.y = -Math.PI / 2;
+                direction.z -= this.speed * dt;
+                // this.mesh.rotation.y = -Math.PI / 2;
             }
             if (this.controller.keys['left']) {
-                direction.z = -1;
-                this.mesh.rotation.y = Math.PI;
+                // direction.z = -1;
+                this.currentRotation.y += (Math.PI / 2) * dt;
             }
             if (this.controller.keys['right']) {
-                direction.z = 1;
-                this.mesh.rotation.y = 0;
+                // direction.z = 1;
+                this.currentRotation.y -= (Math.PI / 2) * dt
             }
             if (this.controller.keys['shiftRight']) {
-                this.cameraRotationY += this.speed * dt
+                this.cameraRotationY += (Math.PI / 2) * dt
             }
             if (this.controller.keys['shiftLeft']) {
-                this.cameraRotationY -= this.speed * dt
+                this.cameraRotationY -= (Math.PI / 2) * dt
+            }
+            if (this.controller.isFirstPerson) {
+                this.cameraRotationZ = 0;
             }
 
             this.lastRotation = this.mesh.rotation.y;
@@ -140,6 +145,31 @@ export class Player {
                 }
             }
 
+            if (this.controller.keys["tiltLeft"]) {
+                this.cameraRotationZ = Math.min(
+                    this.cameraRotationZ + this.speed * dt,
+                    15 * (Math.PI / 180)
+                );
+            }
+            if (this.controller.keys["tiltRight"]) {
+                this.cameraRotationZ = Math.max(
+                    this.cameraRotationZ - this.speed * dt,
+                    -15 * (Math.PI / 180)
+                );
+            }
+
+            if (!this.controller.keys['tiltLeft'] && !this.controller.keys['tiltRight']) {
+                this.cameraRotationZ = 0;
+            }
+            // else {
+            //     // If no tilt keys are pressed, reset cameraRotationZ to zero
+            //     if (this.cameraRotationZ > 0) {
+            //         this.cameraRotationZ = Math.max(this.cameraRotationZ - this.speed * dt, 0);
+            //     } else if (this.cameraRotationZ < 0) {
+            //         this.cameraRotationZ = Math.min(this.cameraRotationZ + this.speed * dt, 0);
+            //     }
+            // }
+
             if (this.controller.mouseDown) {
                 var dtMouse = this.controller.deltaMousePos;
                 dtMouse.x = dtMouse.x / Math.PI;
@@ -148,36 +178,53 @@ export class Player {
                 this.rotationVector.y += dtMouse.x * dt * 10;
                 this.rotationVector.z += dtMouse.y * dt * 10;
             }
-            this.mesh.rotation.y += this.rotationVector.y;
+            this.currentRotation.y += this.rotationVector.y * dt;
+            this.currentRotation.z += this.rotationVector.z * dt;
+            this.rotationVector.set(0, 0, 0);
+            // this.mesh.rotation.y += this.currentRotation.y;
 
-            var forwardVector = new THREE.Vector3(1, 0, 0);
-            var rightVector = new THREE.Vector3(0, 0, 1);
-            forwardVector.applyAxisAngle(
+            // var forwardVector = new THREE.Vector3(1, 0, 0);
+            // var rightVector = new THREE.Vector3(0, 0, 1);
+            // forwardVector.applyAxisAngle(
+            //     new THREE.Vector3(0, 1, 0),
+            //     this.rotationVector.y
+            // );
+            // rightVector.applyAxisAngle(
+            //     new THREE.Vector3(0, 1, 0),
+            //     this.rotationVector.y
+            // );
+
+            // this.mesh.position.add(
+            //     forwardVector.multiplyScalar(dt * this.speed * direction.x)
+            // );
+            // this.mesh.position.add(
+            //     rightVector.multiplyScalar(dt * this.speed * direction.z)
+            // );
+            direction.applyAxisAngle(
                 new THREE.Vector3(0, 1, 0),
-                this.rotationVector.y
-            );
-            rightVector.applyAxisAngle(
-                new THREE.Vector3(0, 1, 0),
-                this.rotationVector.y
+                this.currentRotation.y
             );
 
-            this.mesh.position.add(
-                forwardVector.multiplyScalar(dt * this.speed * direction.x)
-            );
-            this.mesh.position.add(
-                rightVector.multiplyScalar(dt * this.speed * direction.z)
-            );
+            if (this.controller.isFirstPerson) {
+                direction.applyAxisAngle(
+                    new THREE.Vector3(0, 1, 0),
+                    this.cameraRotationY
+                );
+            }
+
+            this.mesh.position.add(direction);
+            this.mesh.rotation.copy(this.currentRotation);
 
             this.updateBoundingBox();
             if (this.checkCollision(carBoundingBoxes)) {
                 // Revert to original position if collision is detected
                 this.mesh.position.copy(originalPosition);
             } else {
-                this.camera.setup(this.mesh.position, this.rotationVector);
+                this.camera.setup(this.mesh.position, this.currentRotation, this.cameraRotationY, this.cameraRotationZ);
             }
 
 
-            this.camera.setup(this.mesh.position, this.rotationVector, this.cameraRotationY);
+            this.camera.setup(this.mesh.position, this.currentRotation, this.cameraRotationY, this.cameraRotationZ);
 
             if (this.mixer) {
                 this.mixer.update(dt);
@@ -193,6 +240,10 @@ export class PlayerController {
             backward: false,
             left: false,
             right: false,
+            shiftRight: false,
+            shiftLeft: false,
+            tiltRight: false,
+            tiltLeft: false,
             firstPerson: false,
             thirdPerson: false,
             freeMode: false
@@ -247,6 +298,14 @@ export class PlayerController {
             case "d".charCodeAt(0):
                 this.keys["right"] = true;
                 break;
+            case "E".charCodeAt(0):
+            case "e".charCodeAt(0):
+                this.keys["tiltRight"] = true;
+                break;
+            case "Q".charCodeAt(0):
+            case "q".charCodeAt(0):
+                this.keys["tiltLeft"] = true;
+                break;
             case "F".charCodeAt(0):
             case "f".charCodeAt(0):
                 this.keys['firstPerson'] = true;
@@ -286,6 +345,14 @@ export class PlayerController {
             case "D".charCodeAt(0):
             case "d".charCodeAt(0):
                 this.keys["right"] = false;
+                break;
+            case "E".charCodeAt(0):
+            case "e".charCodeAt(0):
+                this.keys["tiltRight"] = false;
+                break;
+            case "Q".charCodeAt(0):
+            case "q".charCodeAt(0):
+                this.keys["tiltLeft"] = false;
                 break;
             case 39:
                 this.keys['shiftRight'] = false
@@ -328,12 +395,6 @@ export class ThirdPersonCamera {
             this.camera.rotation.y = angle.y + Math.PI - cameraRotationY; // Yaw
             this.camera.rotation.x = -xLevel; // Pitch
             this.camera.rotation.z = cameraRotationZ; // Roll (if needed)
-            temp = new THREE.Vector3();
-            temp.copy(this.targetOffSet);
-            temp.applyAxisAngle(new THREE.Vector3(angle.x, 1, 0), angle.y + cameraRotationY);
-            // temp.applyAxisAngle(new THREE.Vector3(angle.y, 0, 1), angle.z);
-            temp.add(target);
-            this.camera.lookAt(temp);
         } else {
             temp = new THREE.Vector3();
             temp.addVectors(target, this.targetOffSet);
