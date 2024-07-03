@@ -75,7 +75,7 @@ const objects = [];
 // Bubbles
 let bubbles = [];
 function createBubbles() {
-  const bubbleGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+  const bubbleGeometry = new THREE.SphereGeometry(0.15, 32, 32);
   const bubbleMaterial = new THREE.MeshPhongMaterial({
     color: 0x9fdbfc,
     opacity: 0.3,
@@ -354,7 +354,7 @@ setTimeout(() => {
   isOrbitalMode = false;
   bubbles.forEach((bubble) => scene.remove(bubble));
   showBubbles = false;
-}, 10000);
+}, 20000);
 
 var keys = {
   nightMode: false,
@@ -579,7 +579,8 @@ function render(dt) {
         [172.000, 5.700, -62.500],
         [118.500, 5.700, -124.000],
         [88.000, 5.700, -136.500],
-        [44.000, 5.700, 82.500]
+        [44.000, 5.700, 82.500],
+        [43.500, 5.700, 56.000]
       ];
       // Lampu Jalan
       for (var i = 0; i < point_light.length; i++) {
@@ -661,11 +662,11 @@ function render(dt) {
 
     player.update(dt, carBoundingBoxes.concat(mapBoundingBoxes));
 
-    // if (isOrbitalMode && player.mesh) {
-    //   const radius = 5; // Distance from the player
-    //   const speed = 0.038; // Orbit speed
-    //   player.camera.orbit(player.mesh.position, radius, speed);
-    // }
+    if (isOrbitalMode && player.mesh) {
+      const radius = 5; // Distance from the player
+      const speed = 0.038; // Orbit speed
+      player.camera.orbit(player.mesh.position, radius, speed);
+    }
   }
 
   renderer.render(scene, camera);
