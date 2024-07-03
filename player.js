@@ -70,6 +70,7 @@ export class Player {
             loader.setPath('./resources/project/');
             loader.load('Breathing Idle.fbx', (fbx) => { onLoad('idle', fbx, 0) });
             loader.load('Running.fbx', (fbx) => { onLoad('run', fbx, 0) });
+            loader.load('Waving.fbx', (fbx) => { onLoad('wave', fbx, 0) });
 
 
         });
@@ -127,7 +128,15 @@ export class Player {
 
             this.lastRotation = this.mesh.rotation.y;
             // console.log(direction.length())
-            if (direction.length() == 0) {
+            if (this.controller.keys['wave']) {
+                if (this.animations['wave']) {
+                    if (this.state != "wave") {
+                        this.mixer.stopAllAction();
+                        this.state = "wave";
+                    }
+                    this.mixer.clipAction(this.animations['wave'].clip).play();
+                }
+            } else if (direction.length() == 0) {
                 if (this.animations['idle']) {
                     if (this.state != "idle") {
                         this.mixer.stopAllAction();
@@ -144,17 +153,17 @@ export class Player {
                     this.mixer.clipAction(this.animations['run'].clip).play();
                 }
             }
-
+            
             if (this.controller.keys["tiltLeft"]) {
                 this.cameraRotationZ = Math.min(
                     this.cameraRotationZ + this.speed * dt,
-                    15 * (Math.PI / 180)
+                    5 * (Math.PI / 180)
                 );
             }
             if (this.controller.keys["tiltRight"]) {
                 this.cameraRotationZ = Math.max(
                     this.cameraRotationZ - this.speed * dt,
-                    -15 * (Math.PI / 180)
+                    -5 * (Math.PI / 180)
                 );
             }
 
@@ -244,6 +253,7 @@ export class PlayerController {
             shiftLeft: false,
             tiltRight: false,
             tiltLeft: false,
+            wave: false,
             firstPerson: false,
             thirdPerson: false,
             freeMode: false
@@ -306,6 +316,10 @@ export class PlayerController {
             case "q".charCodeAt(0):
                 this.keys["tiltLeft"] = true;
                 break;
+            case "P".charCodeAt(0):
+            case "p".charCodeAt(0):
+                this.keys['wave'] = true;
+                break;
             case "F".charCodeAt(0):
             case "f".charCodeAt(0):
                 this.keys['firstPerson'] = true;
@@ -353,6 +367,10 @@ export class PlayerController {
             case "Q".charCodeAt(0):
             case "q".charCodeAt(0):
                 this.keys["tiltLeft"] = false;
+                break;
+            case "P".charCodeAt(0):
+            case "p".charCodeAt(0):
+                this.keys['wave'] = false;
                 break;
             case 39:
                 this.keys['shiftRight'] = false
