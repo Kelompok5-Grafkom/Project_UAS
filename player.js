@@ -39,7 +39,9 @@ export class Player {
         loader.setPath('./resources/project/');
         loader.load('Breathing Idle.fbx', (fbx) => {
             fbx.scale.setScalar(0.005);
+            // fbx.position.x = 40;
             fbx.position.y = 1.25;
+            // fbx.position.z = 30;
             fbx.traverse(c => {
                 if (c.isMesh) {
                     c.castShadow = true;

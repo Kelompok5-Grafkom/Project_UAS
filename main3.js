@@ -54,7 +54,7 @@ scene.add(dirLight);
 // Ambient Light
 var ambLight = new THREE.AmbientLight(color);
 ambLight.intensity = 0.5;
-ambLight.name = 'ambLight_day'
+ambLight.name = "ambLight_day";
 scene.add(ambLight);
 
 // plane
@@ -115,7 +115,11 @@ mapLoader.load("Map.gltf", function (gltf) {
       c.receiveShadow = true;
       c.castShadow = true;
 
-      if (c.name !== 'Ground' && !c.name.includes('SM_Electric_Pole') && !c.name.includes('SM_Street_Board')) {
+      if (
+        c.name !== "Ground" &&
+        !c.name.includes("SM_Electric_Pole") &&
+        !c.name.includes("SM_Street_Board")
+      ) {
         const box = new THREE.Box3().setFromObject(c);
         mapBoundingBoxes.push(box);
       }
@@ -172,7 +176,7 @@ objLoader.load("car2.gltf", function (gltf) {
   model.position.y = 1.25;
   model.position.x = 22;
   model.position.z = 10;
-  model.rotation.y = 1.57
+  model.rotation.y = 1.57;
   model.traverse((c) => {
     if (c.isMesh) {
       c.receiveShadow = true;
@@ -228,6 +232,109 @@ objLoader.load("car4.gltf", function (gltf) {
   carBoundingBoxes.push(carBoundingBox);
 });
 
+const fbxLoader = new FBXLoader();
+const mixers = [];
+
+fbxLoader.load(
+  "resources/project/Jerry.fbx",
+  (object) => {
+    object.scale.setScalar(0.02);
+    object.position.set(37, 1.3, 25);
+    scene.add(object);
+
+    const mixer = new THREE.AnimationMixer(object);
+    mixers.push(mixer);
+    object.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const carBoundingBox = new THREE.Box3().setFromObject(object);
+    carBoundingBoxes.push(carBoundingBox);
+
+    const animations = object.animations;
+    animations.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      action.play();
+    });
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  (error) => {
+    console.log(error);
+  }
+);
+
+fbxLoader.load(
+  "resources/project/sitting.fbx",
+  (object) => {
+    object.scale.setScalar(0.01);
+    object.position.set(53, 1.2, 27.95);
+    scene.add(object);
+
+    const mixer = new THREE.AnimationMixer(object);
+    mixers.push(mixer);
+    object.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const carBoundingBox = new THREE.Box3().setFromObject(object);
+    carBoundingBoxes.push(carBoundingBox);
+
+    const animations = object.animations;
+    animations.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      action.play();
+    });
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  (error) => {
+    console.log(error);
+  }
+);
+
+fbxLoader.load(
+  "resources/project/Phone Call.fbx",
+  (object) => {
+    object.scale.setScalar(0.01);
+    object.position.set(8, 1.22, -12);
+    scene.add(object);
+
+    const mixer = new THREE.AnimationMixer(object);
+    mixers.push(mixer);
+    object.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    const carBoundingBox = new THREE.Box3().setFromObject(object);
+    carBoundingBoxes.push(carBoundingBox);
+
+    const animations = object.animations;
+    animations.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      action.play();
+    });
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  (error) => {
+    console.log(error);
+  }
+);
+
+
 // THIRD PERSON
 var player = new Player(
   new ThirdPersonCamera(
@@ -251,18 +358,18 @@ setTimeout(() => {
 
 var keys = {
   nightMode: false,
-  dayMode: false
+  dayMode: false,
 };
 
 function onKeyDown(event) {
   switch (event.keyCode) {
     case "N".charCodeAt(0):
     case "n".charCodeAt(0):
-      keys['nightMode'] = true
+      keys["nightMode"] = true;
       break;
     case "M".charCodeAt(0):
     case "m".charCodeAt(0):
-      keys['dayMode'] = true
+      keys["dayMode"] = true;
       break;
   }
 }
@@ -271,11 +378,11 @@ function onKeyUp(event) {
   switch (event.keyCode) {
     case "N".charCodeAt(0):
     case "n".charCodeAt(0):
-      keys['nightMode'] = false
+      keys["nightMode"] = false;
       break;
     case "M".charCodeAt(0):
     case "m".charCodeAt(0):
-      keys['dayMode'] = false
+      keys["dayMode"] = false;
       break;
   }
 }
@@ -287,23 +394,23 @@ console.log(scene);
 var isAmbient = false;
 var isDir = false;
 function render(dt) {
-  console.log(keys['nightMode']);
+  console.log(keys["nightMode"]);
 
   // Night & Day mode
-  if (keys['nightMode']) {
+  if (keys["nightMode"]) {
     isDir = false;
     uniforms["sunPosition"].value.set(0, 0, 0);
 
-    scene.children.forEach(s => {
+    scene.children.forEach((s) => {
       if (s instanceof THREE.DirectionalLight) {
         scene.remove(s);
       }
 
-      if (s.name == 'ambLight_day') {
+      if (s.name == "ambLight_day") {
         scene.remove(s);
       }
 
-      if (s.name == 'ambLight_night') {
+      if (s.name == "ambLight_night") {
         isAmbient = true;
       }
     });
@@ -339,24 +446,28 @@ function render(dt) {
       // Lampu Jalan
       for (var i = 0; i < point_light.length; i++) {
         light = new THREE.PointLight(0xedcd6b, 30);
-        light.position.set(point_light[i][0], point_light[i][1], point_light[i][2]);
+        light.position.set(
+          point_light[i][0],
+          point_light[i][1],
+          point_light[i][2]
+        );
         scene.add(light);
       }
 
       var ambLight = new THREE.AmbientLight(0x000038);
       ambLight.intensity = 10;
-      ambLight.name = 'ambLight_night'
+      ambLight.name = "ambLight_night";
       scene.add(ambLight);
     }
   }
 
-  if (keys['dayMode']) {
+  if (keys["dayMode"]) {
     console.log(scene);
     isAmbient = false;
-    uniforms['sunPosition'].value.copy(sun);
+    uniforms["sunPosition"].value.copy(sun);
 
-    scene.children.forEach(s => {
-      if (s.name == 'ambLight_night') {
+    scene.children.forEach((s) => {
+      if (s.name == "ambLight_night") {
         scene.remove(s);
       }
 
@@ -382,7 +493,7 @@ function render(dt) {
 
       var ambLight = new THREE.AmbientLight(color);
       ambLight.intensity = 0.5;
-      ambLight.name = 'ambLight_day';
+      ambLight.name = "ambLight_day";
       scene.add(ambLight);
     }
   }
@@ -438,6 +549,8 @@ function animate(time) {
 
   if (mixer) mixer.update(delta);
 
+  mixers.forEach((mixer) => mixer.update(delta));
+
   // bubbles
   if (showBubbles) {
     bubbles.forEach((bubble) => {
@@ -451,12 +564,12 @@ function animate(time) {
   requestAnimationFrame(animate);
 }
 
-window.addEventListener('keydown', (event) => {
-  if (event.key === '+') {
+window.addEventListener("keydown", (event) => {
+  if (event.key === "+") {
     camera.fov = Math.max(10, camera.fov - 1);
     camera.updateProjectionMatrix();
-  } else if (event.key === '-') {
-    camera.fov = Math.min(100, camera.fov + 1); 
+  } else if (event.key === "-") {
+    camera.fov = Math.min(100, camera.fov + 1);
     camera.updateProjectionMatrix();
   }
 });
