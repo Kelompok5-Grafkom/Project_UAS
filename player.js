@@ -155,6 +155,10 @@ export class Player {
                     -15 * (Math.PI / 180)
                 );
             }
+
+            if (!this.controller.keys['tiltLeft'] && !this.controller.keys['tiltRight']) {
+                this.cameraRotationZ = 0;
+            }
             // else {
             //     // If no tilt keys are pressed, reset cameraRotationZ to zero
             //     if (this.cameraRotationZ > 0) {
